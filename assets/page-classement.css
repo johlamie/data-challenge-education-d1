@@ -1,0 +1,331 @@
+/* ============================================================================
+   PAGE CLASSEMENT — ossature des deux panneaux et habillage de la table Dash.
+   Toutes les valeurs viennent de assets/tokens.css ; espacements sur la grille
+   de 4 px. Rien ici n'est générique : chaque règle est portée par
+   .page-classement (ou par #cla-table, qui est dedans) et ne peut donc pas
+   déborder sur une autre page.
+   La table Dash ne se stylait jusqu'ici qu'en ligne (style_cell, style_header,
+   couleurs et tailles en clair dans le Python) : ces styles ont été retirés de
+   la page pour vivre ici, en jetons. Elle apporte aussi sa propre feuille
+   (bordures gris clair, texte aligné à droite, pictogrammes de tri d'une autre
+   famille) : c'est elle que ces règles neutralisent, d'où le sélecteur par id.
+   ============================================================================ */
+
+/* ------------------------------------------------------------------
+   1. OSSATURE : entête, puis les deux panneaux qui remplissent l'écran
+   ------------------------------------------------------------------ */
+.page-classement {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+/* Propriété « un seul écran » : à partir de 1280×600 la page
+   ne défile pas, c'est la liste qui défile dans son panneau. Le plancher suit celui
+   de la feuille commune : 1366×768 est une taille d'écran, la fenêtre n'en montre que ~650 px. */
+@media (min-width: 1280px) and (min-height: 600px) {
+  .page-classement { flex: 1 1 auto; }
+}
+
+/* Titre et périmètre à gauche, les quatre filtres compacts à droite. */
+.page-classement .cla-entete {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 648px);
+  gap: 16px;
+  align-items: end;
+  flex: 0 0 auto;
+}
+
+/* ------------------------------------------------------------------
+   2. TABLEAU DE CLASSEMENT COMPLET
+   Même grammaire que le tableau top 10 partagé : filet d'en-tête, lignes de
+   36 px, chiffres en chasse fixe, nom de province en lien.
+   ------------------------------------------------------------------ */
+.page-classement #cla-table .dash-spreadsheet,
+.page-classement #cla-table .dash-cell,
+.page-classement #cla-table .dash-header,
+.page-classement #cla-table .dash-filter {
+  font-family: var(--police);
+}
+
+/* La table écrit sa bordure gris clair par défaut **en ligne** sur chaque
+   cellule : seul `!important` peut la rendre au système. C'est le seul endroit
+   de la page où il est nécessaire, et il ne sert qu'à cela. */
+.page-classement #cla-table td.dash-cell,
+.page-classement #cla-table th.dash-header,
+.page-classement #cla-table th.dash-filter {
+  border: none !important;
+}
+
+.page-classement #cla-table th.dash-header { border-bottom: 1px solid var(--line-strong) !important; }
+.page-classement #cla-table th.dash-filter { border-bottom: 1px solid var(--line) !important; }
+.page-classement #cla-table td.dash-cell { border-bottom: 1px solid var(--line) !important; }
+
+/* --- en-têtes : jamais de capitales ni d'interlettrage (anti-patron) --- */
+.page-classement #cla-table th.dash-header {
+  padding: 8px;
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink-3);
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: normal;
+  vertical-align: bottom;
+  background: var(--surface-1);
+}
+
+.page-classement #cla-table th.dash-header > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* La table pose l'action de tri avant le libellé : le libellé passe devant. */
+.page-classement #cla-table th.dash-header .column-actions { order: 2; }
+
+.page-classement #cla-table th.dash-header[data-dash-column="rang"] > div,
+.page-classement #cla-table th.dash-header[data-dash-column="score"] > div,
+.page-classement #cla-table th.dash-header[data-dash-column="abandon"] > div,
+.page-classement #cla-table th.dash-header[data-dash-column="valeur_aff"] > div {
+  justify-content: flex-end;
+}
+
+/* Le tri porte l'icône maison (une seule famille, 16 px) : la table embarque
+   ses propres pictogrammes, on les masque et on peint le masque local. */
+.page-classement #cla-table .column-header--sort svg { display: none; }
+
+.page-classement #cla-table .column-header--sort {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background-color: var(--ink-3);
+  mask-image: url(/assets/icones/chevron-up-down.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/assets/icones/chevron-up-down.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+/* survol d'abord : la colonne triée garde ensuite l'accent, même sous la souris */
+.page-classement #cla-table th.dash-header:hover .column-header--sort { background-color: var(--ink-2); }
+
+.page-classement #cla-table .column-header--sort:has(.fa-sort-up),
+.page-classement #cla-table .column-header--sort:has(.fa-sort-down) {
+  background-color: var(--accent);
+  mask-image: url(/assets/icones/chevron-down.svg);
+  -webkit-mask-image: url(/assets/icones/chevron-down.svg);
+}
+
+.page-classement #cla-table .column-header--sort:has(.fa-sort-up) { transform: scaleY(-1); }
+
+/* --- ligne de filtre --- */
+.page-classement #cla-table th.dash-filter {
+  padding: 0 4px;
+  background: var(--surface-hover);
+}
+
+.page-classement #cla-table th.dash-filter > div { display: flex; flex-direction: row; align-items: center; gap: 4px; }
+
+.page-classement #cla-table th.dash-filter input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  height: 32px;
+  padding: 0 4px;
+  font-family: var(--police);
+  font-size: var(--fs-meta);
+  color: var(--ink);
+  text-align: left;
+  background: none;
+  border: none;
+}
+
+.page-classement #cla-table th.dash-filter input::placeholder { color: var(--ink-3); }
+
+/* La cellule rogne ce qui dépasse : l'anneau de mise au point se pose à
+   l'intérieur du champ (même décalage négatif que les listes déroulantes). */
+.page-classement #cla-table th.dash-filter input[type="text"]:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+  border-radius: var(--r-sm);
+}
+
+.page-classement #cla-table th.dash-filter .dash-filter--case {
+  flex: 0 0 auto;
+  width: 20px;
+  font-family: var(--police);
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.page-classement #cla-table th.dash-filter .dash-filter--case:hover { color: var(--ink-2); }
+
+/* --- corps : lignes de 36 px, filet de 1 px, chiffres en chasse fixe --- */
+.page-classement #cla-table td.dash-cell {
+  height: 36px;
+  padding: 4px 8px;
+  font-size: var(--fs-body);
+  color: var(--ink-2);
+  text-align: left;
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Les cellules « markdown » (le nom de la province, qui est un lien) sont des
+   blocs en ligne : leur ligne de base décalait le nom de 4 px par rapport aux
+   nombres de la même ligne. En bloc, la cellule les centre comme les autres. */
+.page-classement #cla-table td.dash-cell .dash-cell-value { display: block; line-height: 1.35; }
+.page-classement #cla-table td.dash-cell .dash-cell-value p { margin: 0; line-height: 1.35; }
+
+/* Un nom passe à la ligne ; un nombre ne se coupe jamais. */
+.page-classement #cla-table td.dash-cell[data-dash-column="province_carte"],
+.page-classement #cla-table td.dash-cell[data-dash-column="region_carte"] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.page-classement #cla-table td.dash-cell[data-dash-column="rang"],
+.page-classement #cla-table td.dash-cell[data-dash-column="score"],
+.page-classement #cla-table td.dash-cell[data-dash-column="abandon"],
+.page-classement #cla-table td.dash-cell[data-dash-column="valeur_aff"],
+.page-classement #cla-table td.dash-cell[data-dash-column="imp"] {
+  white-space: nowrap;
+}
+
+.page-classement #cla-table td.dash-cell[data-dash-column="rang"] { color: var(--ink-3); font-weight: 600; }
+.page-classement #cla-table td.dash-cell[data-dash-column="score"],
+.page-classement #cla-table td.dash-cell[data-dash-column="abandon"],
+.page-classement #cla-table td.dash-cell[data-dash-column="valeur_aff"] { color: var(--ink); }
+.page-classement #cla-table td.dash-cell[data-dash-column="region_carte"],
+.page-classement #cla-table td.dash-cell[data-dash-column="imp"] { color: var(--ink-3); }
+
+/* ------------------------------------------------------------------
+   3. PANNEAU DE CARTE
+   Le classement n'a pas de bande de chiffres clés : son panneau de droite est
+   plus haut que « largeur ÷ 1,4 », et le contour du Burkina Faso (≈ 1,4:1)
+   y laisserait une bande vide au-dessus et
+   au-dessous du pays. La boîte reprend donc le rapport du pays, comme en
+   régime empilé : le tracé occupe toute la boîte, et la place qui reste va à
+   la légende, juste sous la carte.
+   La feuille commune garde d'ailleurs la légende sous la carte sur cette page, y compris sur
+   écran court (il n'y déporte la légende à droite que sur la vue d'ensemble, où
+   la bande de chiffres clés écrase le panneau).
+   ------------------------------------------------------------------ */
+@media (min-width: 1280px) {
+  .racine-pleine .page-classement .zone-carte {
+    flex: 0 1 auto;
+    aspect-ratio: 1.4 / 1;
+    max-height: 560px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   4. FILTRE SANS RÉSULTAT
+   La phrase n'apparaît que si un champ de filtre contient du texte
+   (:not(:placeholder-shown)) **et** que le corps du tableau est vide : au
+   premier rendu, la liste est vide sans que personne n'ait filtré, et un
+   « aucun résultat » y serait faux.
+   ------------------------------------------------------------------ */
+.page-classement .vide-filtre { display: none; }
+
+.page-classement .bloc-liste:has(#cla-table th.dash-filter input[type="text"]:not(:placeholder-shown)):has(#cla-table .cell-1-1 tbody:empty) .vide-filtre {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* le tableau vide rend sa hauteur à la phrase, qui se centre dans le panneau */
+.page-classement .bloc-liste:has(#cla-table th.dash-filter input[type="text"]:not(:placeholder-shown)):has(#cla-table .cell-1-1 tbody:empty) .zone-liste {
+  flex: 0 0 auto;
+  height: auto;
+}
+
+/* ------------------------------------------------------------------
+   5. RÉACTIF
+   ------------------------------------------------------------------ */
+@media (max-width: 1279px) {
+  .page-classement .cla-entete { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}
+
+/* Sous 576 px la rangée passe à deux colonnes : le critère de classement, dont les
+   libellés sont les plus longs (« Risque l'an prochain »), prend alors la ligne entière —
+   une valeur choisie se lit toujours en entier, à toutes les largeurs. */
+@media (max-width: 575px) {
+  .page-classement .filtres-compacts .filtre-mesure { grid-column: 1 / -1; }
+}
+
+@media (max-width: 991px) {
+  /* Cibles tactiles : lignes de 48 px, action principale de 44 px, et un champ
+     de filtre à 16 px pour qu'iOS ne zoome pas à la mise au point. */
+  .page-classement #cla-table td.dash-cell { height: 48px; }
+  /* le lien d'une ligne occupe la hauteur de sa ligne : viser le nom, c'est viser la ligne */
+  .page-classement #cla-table td.dash-cell[data-dash-column="province_carte"] .dash-cell-value a {
+    display: block;
+    padding: 12px 0;
+    margin: -12px 0;
+  }
+  .page-classement #cla-table th.dash-filter input[type="text"] {
+    height: 44px;
+    font-size: var(--fs-lead);
+  }
+  /* Le bouton « Aa » (sensibilité à la casse) de la table prend 20 px dans
+     chaque colonne étroite et masque le champ : il reste sur grand écran, où il
+     y a la place. La recherche est de toute façon insensible à la casse. */
+  .page-classement #cla-table th.dash-filter .dash-filter--case { display: none; }
+  .page-classement .btn-dc { height: 44px; }
+}
+
+@media (max-width: 575px) {
+  /* À 390 px la colonne « Région » sort du tableau (comme le top 10 de la vue
+     d'ensemble la retire) : la fiche de la province la redonne, et la liste tient sans
+     défilement latéral. */
+  .page-classement #cla-table td.dash-cell[data-dash-column="region_carte"],
+  .page-classement #cla-table th.dash-header[data-dash-column="region_carte"],
+  .page-classement #cla-table th.dash-filter[data-dash-column="region_carte"] {
+    display: none;
+  }
+
+  /* Colonnes étroites : le libellé garde sa taille et c'est le chevron de tri
+     qui passe à la ligne — rien n'est coupé, rien ne rétrécit sous l'échelle. */
+  .page-classement #cla-table th.dash-header,
+  .page-classement #cla-table td.dash-cell { padding: 4px; }
+  .page-classement #cla-table th.dash-header > div { flex-wrap: wrap; row-gap: 0; }
+
+  /* La colonne « Région » est retirée ici (plus bas) : sa part doit revenir aux colonnes qui
+     restent, sinon « Abandon % » et « Estimé » s'écrivent dans une boîte trop courte et sont
+     rognés. Les largeurs sont posées en ligne par la table (en % de sa largeur) : `!important`
+     est le seul moyen de les reprendre, et elles sont redonnées à l'en-tête ET au corps pour
+     que les deux tables de la vue à en-tête figé restent alignées.
+     Le libellé peut aussi passer à la ligne : rien n'est coupé, rien ne rétrécit. */
+  .page-classement #cla-table th.dash-header .column-header-name { min-width: 0; white-space: normal; }
+  .page-classement #cla-table th[data-dash-column="province_carte"],
+  .page-classement #cla-table td[data-dash-column="province_carte"] { width: 28% !important; }
+  .page-classement #cla-table th[data-dash-column="rang"],
+  .page-classement #cla-table td[data-dash-column="rang"] { width: 12% !important; }
+  .page-classement #cla-table th[data-dash-column="score"],
+  .page-classement #cla-table td[data-dash-column="score"] { width: 15% !important; }
+  .page-classement #cla-table th[data-dash-column="abandon"],
+  .page-classement #cla-table td[data-dash-column="abandon"] { width: 24% !important; }
+  .page-classement #cla-table th[data-dash-column="imp"],
+  .page-classement #cla-table td[data-dash-column="imp"] { width: 21% !important; }
+  /* Quatre colonnes sur 358 px : un mot d'invite coupé (« filtre ») n'apprend rien. Il ne
+     reste que dans la colonne large, où il tient en entier et suffit à dire ce qu'est la
+     ligne ; ailleurs le champ est vide, et la dernière colonne garde la place d'écrire
+     « oui » en entier. */
+  .page-classement #cla-table th.dash-filter input::placeholder { color: transparent; }
+  .page-classement #cla-table th.dash-filter[data-dash-column="province_carte"] input::placeholder { color: var(--ink-3); }
+  .page-classement #cla-table th.dash-filter input[type="text"] { padding: 0; }
+  .page-classement #cla-table td.dash-cell[data-dash-column="imp"],
+  .page-classement #cla-table th.dash-header[data-dash-column="imp"],
+  .page-classement #cla-table th.dash-filter[data-dash-column="imp"] { padding-right: 8px; }
+}

@@ -1,0 +1,50 @@
+# Secrets et environnement
+.env
+.env.*
+!.env.example
+*.pem
+*password*
+*passwd*
+*credentials*
+*access*code*
+
+# Données et exports (jamais versionner de données réelles)
+*.csv
+*.tsv
+*.parquet
+*.xlsx
+*.xls
+*.geojson
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+exports/
+captures/
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.log
+
+# Python / outils
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store
+
+# Private per-role memory
+/.agentic/agent-memory/
+/.claude/agent-memory
+/.agentic/approvals/
+
+# Local evidence (screenshots, QA and review reports, throwaway scripts)
+/.artifacts/

@@ -1,0 +1,153 @@
+/* ============================================================================
+   PAGE « FICHE PROVINCE »
+   Toutes les règles sont portées par la classe de page .page-fiche : rien ne fuit
+   vers une autre page. Aucune valeur en clair : uniquement les jetons de
+   assets/tokens.css et la grille d'espacement de 4 px.
+   La feuille de style commune (assets/style.css) n'est pas modifiée et n'est
+   jamais redite ici : ce fichier ne pose que la mise en page propre à l'écran.
+   ============================================================================ */
+
+/* ============================================================
+   1. BANDEAU DU HAUT — UN seul cadre, UNE seule rangée
+   Deux cadres côte à côte, deux titres et le nom de la
+   province redit sous le sélecteur coûtaient une demi-page pour trois
+   informations. Tout vit maintenant dans un seul .carte-bloc : à gauche les
+   sélecteurs, la ligne d'identité et les quatre chiffres clés, tout à droite la
+   carte. Aucun volet ne s'étire sur la hauteur de l'autre — c'était la cause des
+   cellules de chiffres clés hautes et vides à 1440.
+   ============================================================ */
+.page-fiche .fiche-bandeau {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* la carte passe à droite dès que la rangée tient : 272 px de large, soit 194 px de
+   haut au format du pays — assez pour viser une province, jamais la moitié du bandeau */
+@media (min-width: 992px) {
+  .page-fiche .fiche-bandeau { grid-template-columns: minmax(0, 1fr) 272px; }
+}
+
+.page-fiche .fiche-pilote { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+/* dcc.Loading intercale deux conteneurs nus entre le volet et l'entête : sans cette chaîne, la
+   ligne d'identité et la bande de chiffres clés ne partagent pas l'écart de 8 px du volet. */
+.page-fiche .fiche-pilote > div:not(.filtres-fiche),
+.page-fiche .fiche-pilote > div:not(.filtres-fiche) > div:first-child,
+.page-fiche .fiche-pilote #fic-entete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* la rangée de chiffres clés : quatre cellules de front quand la place existe, 2×2 en dessous */
+@media (min-width: 1200px) {
+  .page-fiche .fiche-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ligne d'identité : l'écart vient du volet, pas de la note ; le texte peut rétrécir */
+.page-fiche .fiche-identite { margin-top: 0; min-width: 0; }
+/* le nom de la région est écrit dans le bleu de son contour sur la carte : c'est ce qui remplace
+   la légende retirée (contraste 8,1:1 sur la surface du bloc) */
+.page-fiche .nom-region { font-weight: 600; color: var(--carte-region-trait); }
+/* chargement : la barre a la hauteur de la ligne qu'elle remplace, pas celle d'un titre */
+.page-fiche .fiche-identite .squelette-ligne { width: 56%; height: 16px; margin-bottom: 0; }
+
+/* ============================================================
+   2. CARTE DE LOCALISATION
+   Le format du panneau (1,4:1, plafond 340 px, 300 px sous 992) est une règle
+   commune : assets/style.css la pose pour .zone-carte et .fiche-carte, la page
+   ne la répète pas. Plus aucune légende ici : la seule phrase conservée dit ce
+   qu'un clic fait.
+   ============================================================ */
+.page-fiche .fiche-locali { display: flex; flex-direction: column; min-width: 0; }
+
+/* ============================================================
+   3. BLOCS DU BAS — deux graphiques, puis le tableau et la qualité
+   ============================================================ */
+.page-fiche .fiche-graphiques {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* « Qualité des données » est passée SOUS « Indicateurs et rangs », sur toute la largeur :
+   en colonne de droite, ses phrases courtes tenaient sur six lignes
+   contre quinze pour le tableau, et le bas de la colonne restait vide. */
+.page-fiche .fiche-bas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* l'écart entre les blocs est celui de la grille, jamais la marge d'un bloc isolé */
+.page-fiche .fiche-graphiques > .carte-bloc, .page-fiche .fiche-bas > .carte-bloc { margin-bottom: 0; }
+
+/* les pistes de contribution portent leur propre hauteur (six lignes de 18 px) ;
+   la courbe d'insécurité, elle, vit dans une boîte de hauteur fixe pour que le bloc
+   garde la même taille d'une sélection à l'autre */
+/* 220 px = 6 composantes × (piste 18 + écart 16) + marges 16, la hauteur que
+   figures.barres_contributions() calcule pour ses six lignes */
+.page-fiche .zone-barres { flex: 0 0 auto; height: 220px; margin-top: 8px; }
+/* 200 px, et 176 sur un écran court (§ 6) : c'est la hauteur qui met les deux blocs de
+   graphique au complet dans la fenêtre, objectif « une page ». Les deux blocs
+   d'une rangée partagent la hauteur du plus haut, et c'est la courbe qui la fixait. */
+.page-fiche .zone-courbes { flex: 0 0 auto; height: 200px; margin-top: 8px; }
+
+/* ============================================================
+   4. TABLEAU DES INDICATEURS
+   ============================================================ */
+.page-fiche .zone-table { overflow-x: auto; }
+.page-fiche .table-fiche { width: 100%; }
+.page-fiche .table-fiche td { padding: 8px; }
+.page-fiche .table-fiche th.col-num, .page-fiche .table-fiche td.col-num { text-align: right; white-space: nowrap; }
+.page-fiche .table-fiche td.col-num { color: var(--ink); }
+.page-fiche .table-fiche .col-indic { color: var(--ink-2); }
+.page-fiche .table-fiche .col-source { font-size: var(--fs-meta); color: var(--ink-3); }
+
+/* ============================================================
+   5. QUALITÉ DES DONNÉES
+   ============================================================ */
+/* le bloc tient toute la largeur : ses deux volets se partagent la rangée plutôt que
+   d'étirer six lignes de texte sur 1 300 px */
+.page-fiche .bloc-qualite { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px 32px; }
+.page-fiche .qualite-volet { min-width: 0; }
+.page-fiche .bloc-qualite p + p, .page-fiche .bloc-qualite .note { margin-top: 4px; }
+.page-fiche .bloc-qualite .titre-liste { margin-top: 0; }
+.page-fiche .bloc-qualite .liste-qualite { margin: 4px 0 0; padding-left: 20px; }
+.page-fiche .bloc-qualite .liste-qualite li { margin-top: 4px; }
+/* l'alerte de découpage concerne les deux volets : elle reprend la largeur entière */
+.page-fiche .bloc-qualite .alerte-dc { margin-top: 0; grid-column: 1 / -1; }
+
+@media (min-width: 992px) {
+  .page-fiche .bloc-qualite { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   6. RÉACTIF
+   ============================================================ */
+@media (max-width: 991px) {
+  .page-fiche .fiche-graphiques, .page-fiche .fiche-bas { grid-template-columns: minmax(0, 1fr); }
+  /* toutes les colonnes restent atteignables : le défilement latéral vit dans le bloc,
+     jamais sur la page */
+  .page-fiche .table-fiche { min-width: 600px; }
+  .page-fiche .table-fiche td { padding: 12px 8px; }
+}
+
+@media (max-width: 575px) {
+  .page-fiche .zone-courbes { height: 280px; }
+}
+
+/* Écrans courts : l'écran de 1440×900 ou 1366×768 du portable, une fois les barres du
+   navigateur déduites, ne laisse que 780 ou 650 px de fenêtre. Le bandeau et les blocs de
+   graphique se resserrent d'un cran (16 → 12) pour que la rangée de graphiques commence plus
+   haut ; aucune hauteur de tracé des contributions n'est touchée (elle vaut six pistes de
+   18 px, règle commune), seule la courbe d'insécurité descend d'un pas. */
+@media (min-width: 992px) and (max-height: 820px) {
+  .page-fiche .fiche-cadre, .page-fiche .fiche-graphiques > .carte-bloc { padding: 12px; }
+  .page-fiche .fiche-kpis .kpi { padding: 8px 12px; }
+  .page-fiche .zone-courbes { height: 176px; }
+}

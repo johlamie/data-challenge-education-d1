@@ -1,0 +1,118 @@
+/* ============================================================================
+   PAGE ÉVOLUTION
+   Règles de page uniquement, toutes portées par `.page-evolution` : la feuille
+   de style commune (assets/style.css) n'est jamais redéfinie depuis une page.
+   Aucune couleur en clair ici : tout vient de assets/tokens.css.
+   ============================================================================ */
+/* Hauteur des graphiques, mesurée par paliers : 440 px à 1440,
+   400 px entre 1024 et 1199, 360 px à 768, 280 px à 390. Un seul endroit la porte, pour que
+   l'état vide garde exactement la hauteur du tracé qu'il remplace.
+   Rythme vertical : 12 px entre l'entête, les filtres et les blocs. Serré d'un
+   cran pour que le premier tracé entre dans un écran de
+   portable (1440×900 et 1366×768) sans défilement. */
+.page-evolution { display: flex; flex-direction: column; gap: 12px; min-width: 0; --h-graphique: 440px; }
+
+/* ---- rangée de filtres : cinq champs + l'interrupteur, sur une grille de 12 colonnes ------- */
+/* `align-items: end` aligne le bas des contrôles : l'interrupteur n'a pas de libellé au-dessus,
+   il se posait sinon en haut de sa cellule. */
+.page-evolution .filtres-evolution { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; align-items: end; }
+.page-evolution .filtres-evolution > .filtre { min-width: 0; grid-column: span 2; }
+.page-evolution .filtres-evolution > .filtre-entites,
+.page-evolution .filtres-evolution > .filtre-indic { grid-column: span 3; }
+.page-evolution .filtres-evolution > .interrupteur-national { min-width: 0; grid-column: span 4; }
+
+/* À partir de 1280 px la rangée tient sur une seule ligne : les six colonnes sont taillées sur le
+   besoin de chaque contrôle (le même rang de 12 parts, redécoupé), l'écran gagne ainsi la hauteur
+   d'une ligne de filtres au profit du graphique. */
+@media (min-width: 1280px) {
+  .page-evolution .filtres-evolution {
+    grid-template-columns: minmax(0, 1.9fr) minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 2.6fr) minmax(0, 2.9fr) minmax(0, 2.4fr);
+  }
+  .page-evolution .filtres-evolution > .filtre,
+  .page-evolution .filtres-evolution > .filtre-entites,
+  .page-evolution .filtres-evolution > .filtre-indic,
+  .page-evolution .filtres-evolution > .interrupteur-national { grid-column: auto; }
+}
+/* le plafond de 8 entités se lit à côté du champ, pas seulement sous le tracé */
+.page-evolution .filtre-avis { font-weight: 400; color: var(--warn-ink); margin-left: 8px; }
+/* le segment « Provinces / Régions » occupe toute la largeur de sa cellule. Sous 576 px la feuille
+   commune l'empile en colonne : `flex` y écraserait la hauteur de 44 px des cibles tactiles, d'où le seuil. */
+@media (min-width: 576px) {
+  .page-evolution .filtre-niveau .segment.dash-options-list { display: flex; width: 100%; }
+  .page-evolution .filtre-niveau .segment .dash-options-list-option { flex: 1 1 0; justify-content: center; }
+}
+
+/* ---- interrupteur de la moyenne nationale ------------------------------- */
+/* 40 px : la hauteur d'un contrôle de filtre, pour que l'interrupteur s'aligne sur la rangée. */
+.page-evolution .interrupteur-national .form-check { display: flex; align-items: center; gap: 8px; margin: 0; min-height: 40px; }
+.page-evolution .interrupteur-national .form-check-label { color: var(--ink-2); }
+
+/* ---- blocs de graphique -------------------------------------------------- */
+/* la hauteur vit ici (la figure est en `autosize`) : 440 px sur un écran large,
+   280 px à 390 px. */
+.page-evolution .graphique { height: var(--h-graphique); min-width: 0; }
+/* dcc.Loading intercale deux conteneurs entre le bloc et le tracé : sans cette chaîne,
+   la figure en `autosize` retombe sur la hauteur par défaut de Plotly et déborde. Le second
+   enfant de dcc.Loading (la place du tourniquet) reste en dehors : étiré, il recouvrirait la
+   phrase de lecture et avalerait son survol. */
+.page-evolution .graphique > div,
+.page-evolution .graphique > div > div:first-child,
+.page-evolution .graphique .dash-graph,
+.page-evolution .graphique .js-plotly-plot { height: 100%; }
+/* un vide dit pourquoi et remplace le tracé : ni graphique vide, ni double message */
+.page-evolution .bloc-graphique:has(.vide) .graphique,
+.page-evolution .bloc-graphique:has(.vide) .legende-series { display: none; }
+/* un vide garde la hauteur du bloc qu'il remplace : la page ne saute pas */
+.page-evolution .lecture .vide { min-height: var(--h-graphique); font-size: var(--fs-body); }
+
+/* ---- légende en pastilles nommées ---------------------------------------- */
+/* À partir de 1024 px chaque courbe est nommée au bout de son tracé : les pastilles
+   seraient une seconde légende pour la même information, elles restent masquées. */
+.page-evolution .legende-series { display: none; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: var(--fs-meta); color: var(--ink-2); }
+.page-evolution .legende-series > span { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.page-evolution .pastille { display: inline-block; flex: 0 0 auto; width: 16px; height: 4px; border-radius: var(--r-sm); background: var(--ink-3); }
+.page-evolution .serie-1 { background: var(--cat-1); }
+.page-evolution .serie-2 { background: var(--cat-2); }
+.page-evolution .serie-3 { background: var(--cat-3); }
+.page-evolution .serie-4 { background: var(--cat-4); }
+.page-evolution .serie-5 { background: var(--cat-5); }
+.page-evolution .serie-6 { background: var(--cat-6); }
+.page-evolution .serie-7 { background: var(--cat-7); }
+.page-evolution .serie-8 { background: var(--cat-8); }
+.page-evolution .serie-nat { background: var(--serie-nationale); }
+
+@media (max-width: 1199px) {
+  .page-evolution .filtres-evolution > .filtre { grid-column: span 4; }
+  .page-evolution .filtres-evolution > .filtre-entites,
+  .page-evolution .filtres-evolution > .filtre-indic { grid-column: span 6; }
+  .page-evolution .filtres-evolution > .interrupteur-national { grid-column: span 6; }
+  .page-evolution { --h-graphique: 400px; }
+}
+
+/* Sous 1024 px les étiquettes de bout de courbe ne tiennent plus dans la marge :
+   ce sont les pastilles nommées qui portent l'identité des séries. Le `:has()`
+   épargne le message d'un tracé vide, qui est lui aussi une annotation. */
+@media (max-width: 1023px) {
+  .page-evolution .legende-series { display: flex; }
+  .page-evolution .graphique:has(.scatterlayer .trace) .annotation { display: none; }
+  /* La marge de droite qui accueille ces étiquettes (128 px dans la figure) est rendue au
+     tracé : le dessin est élargi d'autant et la bande vide, désormais sans rien à montrer,
+     est rognée par le bloc. Sans cela, la moitié d'un écran de 390 px serait blanche. */
+  .page-evolution .graphique { overflow: hidden; }
+  .page-evolution .graphique > div > div:first-child { width: calc(100% + 128px); }
+  .page-evolution .graphique .modebar { display: none; }
+}
+
+@media (max-width: 991px) {
+  .page-evolution { --h-graphique: 360px; }
+  /* cible tactile : la pastille de l'interrupteur fait 24 px, la ligne entière en fait 44 */
+  .page-evolution .interrupteur-national .form-check { min-height: 44px; }
+}
+
+@media (max-width: 575px) {
+  .page-evolution .filtres-evolution > .filtre,
+  .page-evolution .filtres-evolution > .filtre-entites,
+  .page-evolution .filtres-evolution > .filtre-indic,
+  .page-evolution .filtres-evolution > .interrupteur-national { grid-column: 1 / -1; }
+  .page-evolution { --h-graphique: 280px; }
+}

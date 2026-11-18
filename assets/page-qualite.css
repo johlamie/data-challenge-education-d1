@@ -1,0 +1,128 @@
+/* ============================================================================
+   PAGE « QUALITÉ DES DONNÉES »
+   Règles de page uniquement, toutes portées par .qualite-donnees : rien ici ne
+   redéfinit l'intérieur d'un composant partagé pour les autres écrans.
+   Aucune couleur, aucune police, aucun rayon en clair : tout vient de
+   assets/tokens.css. Espacements sur la grille de 4 px.
+   ============================================================================ */
+
+.qualite-donnees { display: flex; flex-direction: column; gap: 24px; }
+.qualite-donnees .carte-bloc { margin-bottom: 0; }
+
+/* Carte et provenance côte à côte ; limites et contours en 8/4. */
+/* Les deux panneaux du haut prennent la hauteur de la rangée : la bande vide qui restait sous
+   « D'où viennent les valeurs estimées » se lisait comme un bloc inachevé. Le tableau garde ses
+   lignes en haut, et c'est sa zone de défilement qui occupe la hauteur rendue. */
+.qualite-haut { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.qualite-haut > .carte-bloc { height: 100%; }
+.qualite-haut > .carte-bloc > .zone-tableau,
+.qualite-haut > .carte-bloc > div:last-child { flex: 1 1 auto; }
+/* align-items: start — un panneau secondaire garde sa hauteur de contenu au lieu
+   de s'étirer sur celle des six limites connues et d'ouvrir un grand vide blanc. */
+.qualite-bas { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 16px; align-items: start; }
+
+/* Le format de la boîte de carte (≈ 1,4:1, le rapport du pays) est une règle commune :
+   assets/style.css la pose pour .zone-carte, la page ne la répète pas. */
+.qualite-donnees .legende-carte { margin-top: 12px; }
+.qualite-donnees .legende-cles:empty { display: none; }
+
+/* ------------------------------------------------------------------ tableaux
+   Le défilement latéral d'un tableau large reste dans sa boîte ; la page, elle,
+   ne défile jamais de côté. Ce qu'il faut faire est dit en toutes lettres dans la
+   note du bloc (« faites glisser le tableau ») : un dégradé de bord serait une
+   décoration, et il ne se lit pas. */
+.qualite-donnees .zone-tableau { overflow-x: auto; margin-top: 8px; }
+.qualite-donnees .zone-tableau .table-dc { min-width: 100%; }
+.qualite-donnees .table-dc .col-annees, .qualite-donnees .table-dc .col-fiab { font-size: var(--fs-meta); }
+/* Une colonne ne descend pas sous une largeur lisible : passé ce seuil le tableau
+   déborde et défile DANS sa boîte, au lieu d'écraser chaque mot sur une ligne. */
+.qualite-donnees .zone-tableau .table-dc th, .qualite-donnees .zone-tableau .table-dc td { min-width: 96px; }
+.qualite-donnees .zone-tableau .table-dc .col-annees { min-width: 160px; }
+
+/* ------------------------------------------------- détail (DataTable de Dash)
+   Le tableau reprend l'anatomie du top 10 : même filet d'en-tête, mêmes encres,
+   même chasse fixe pour les nombres. Dash pose ses propres styles en ligne, d'où
+   les sélecteurs longs ; aucun d'eux ne sort de .qualite-donnees. */
+.qualite-donnees .zone-detail { border-top: 1px solid var(--line-strong); margin-top: 8px; }
+.qualite-donnees .zone-detail .dash-spreadsheet-container { font-family: var(--police); }
+
+/* Mêmes filets que le top 10 : des règles horizontales, jamais un quadrillage.
+   Dash écrit ses propres bordures grises en style en ligne : !important est le seul
+   moyen de leur rendre l'encre du système sans toucher au composant. */
+.qualite-donnees .zone-detail .dash-spreadsheet-inner th,
+.qualite-donnees .zone-detail .dash-spreadsheet-inner td {
+  font-family: var(--police);
+  padding: 4px 8px;
+  min-width: 96px;
+  border-top: none !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.qualite-donnees .zone-detail .dash-spreadsheet-inner th.dash-header {
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  color: var(--ink-3);
+  text-align: left;
+  border-bottom: 1px solid var(--line-strong) !important;
+}
+
+.qualite-donnees .zone-detail .dash-spreadsheet-inner td.dash-cell {
+  font-size: var(--fs-body);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.qualite-donnees .zone-detail .dash-spreadsheet-inner tr:hover td.dash-cell { background: var(--surface-hover); }
+.qualite-donnees .zone-detail .dash-spreadsheet-inner th.dash-filter { background: var(--surface-hover) !important; }
+
+.qualite-donnees .zone-detail .dash-filter input {
+  font-family: var(--police);
+  font-size: var(--fs-meta);
+  color: var(--ink-2);
+  text-align: left !important;
+}
+
+/* Le tri est une action : son chevron reprend l'icône et l'encre du système. */
+.qualite-donnees .zone-detail .column-header--sort { color: var(--ink-3); }
+.qualite-donnees .zone-detail .column-header--sort:hover { color: var(--accent); }
+.qualite-donnees .zone-detail .column-header--sort svg { width: 16px; height: 16px; }
+
+/* Pagination : des boutons discrets, jamais la palette du cadriciel. */
+.qualite-donnees .zone-detail .previous-next-container {
+  font-family: var(--police);
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  padding-top: 8px;
+}
+
+.qualite-donnees .zone-detail .previous-next-container button {
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.qualite-donnees .zone-detail .previous-next-container button:hover { color: var(--accent); }
+.qualite-donnees .zone-detail .previous-next-container input { font-family: var(--police); color: var(--ink); }
+
+/* ------------------------------------------------------------ limites connues
+   Une liste de définitions à filets : ni bloc crème, ni barre latérale colorée.
+   La densité remplace la décoration — six limites se lisent, six encadrés tintés non. */
+.limites { margin: 8px 0 0; }
+.limites .limite dt { display: flex; flex-direction: column; }
+.limite-eti { font-size: var(--fs-meta); font-weight: 600; color: var(--warn-ink); }
+.limite-nom { font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.limites .limite dd { font-size: var(--fs-body); color: var(--ink-2); margin: 4px 0 0; }
+
+/* ------------------------------------------------------------------- réactif */
+@media (max-width: 1199px) {
+  .qualite-bas { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 991px) {
+  .qualite-haut { grid-template-columns: minmax(0, 1fr); }
+  /* cible tactile : la pagination et le tri gardent 44 px sous 992 px */
+  .qualite-donnees .zone-detail .previous-next-container button { min-width: 44px; min-height: 44px; }
+  .qualite-donnees .zone-detail .dash-spreadsheet-inner td.dash-cell { min-height: 44px; }
+}

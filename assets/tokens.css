@@ -1,0 +1,156 @@
+/* ============================================================================
+   JETONS DE CONCEPTION
+   Seul fichier du produit où une couleur, une taille de police ou une pile de
+   polices sont écrites en clair. Tout le reste (assets/style.css, les figures)
+   les consomme par var(). Thème clair uniquement : un tableau de bord lu en
+   plein jour, sur un seul jeu de couleurs vérifié en contraste.
+   Aucune ressource distante : la CSP du produit est default-src 'self'.
+   ============================================================================ */
+:root {
+  /* ---- surfaces et encres : deux niveaux de surface, trois niveaux d'encre ---- */
+  --surface-page: #F2F4F3;
+  --surface-1: #FFFFFF;
+  --surface-hover: #EDF1EF;
+  --ink: #15201D;
+  --ink-2: #49544F;
+  --ink-3: #5E6965;
+  --line: #DCE1DF;
+  --line-strong: #C2CAC7;
+  --border-control: #7E8B86;
+
+  /* ---- accent : une seule teinte, un seul rôle (l'interaction) ---- */
+  --accent: #0F6A5A;
+  --accent-hover: #0B5346;
+  --accent-active: #083E35;
+  --accent-weak: #E6F0ED;
+  --on-accent: #FFFFFF;
+  --focus: #0F6A5A;
+  /* Alias résolu ici, sur :root : le DataTable redéfinit --accent (rose vif) dans sa propre table.
+     Cet alias permet de lui rendre la valeur du système sans écrire de cycle var(--accent). */
+  --accent-racine: var(--accent);
+
+  /* ---- lien de navigation appuyé ----
+     Un lien qui emmène ailleurs — « Classement complet et export » — doit se voir
+     comme un lien : bleu et souligné. La teinte est celle déjà présente dans la
+     palette (le trait de région de la carte de localisation) ; aucune nouvelle
+     couleur n'entre dans le produit, et l'accent teal garde ses autres rôles. */
+  --lien: #1D4F91;
+  --lien-hover: #1D3F6E;
+
+  /* ---- statuts ---- */
+  --danger: #B42318;
+  --danger-ink: #8A2018;
+  --danger-weak: #FFF4F2;
+  --danger-line: #EEBCB3;
+  --warn-ink: #8A5A00;
+
+  /* ---- tendances : ni rouge/vert, l'amélioration est portée par la flèche ---- */
+  --trend-pire: #B42318;
+  --trend-mieux: #49544F;
+  --trend-neutre: #5E6965;
+
+  /* ---- échelle du risque (carte + barres de score) : une seule teinte ---- */
+  --risque-1: #FFF0E8;
+  --risque-2: #FEE0D2;
+  --risque-3: #FCBBA1;
+  --risque-4: #FC9272;
+  --risque-5: #FB6A4A;
+  --risque-6: #EF3B2C;
+  --risque-7: #CB181D;
+  --risque-8: #A50F15;
+  --risque-9: #67000D;
+  --risque-nd: #D9D9D9;
+
+  /* ---- échelle neutre (carte des imputations) : les bleus de localisation ---- */
+  --neutre-1: #F2F7FC;
+  --neutre-2: #E1ECF7;
+  --neutre-3: #CBDDF0;
+  --neutre-4: #A8C8E8;
+  --neutre-5: #86B0DC;
+  --neutre-6: #6798CE;
+  --neutre-7: #4A7CB8;
+  --neutre-8: #2F609C;
+  --neutre-9: #1D3F6E;
+
+  /* ---- carte de localisation (fiche province) ---- */
+  --carte-choisie: #1D3F6E;
+  --carte-region: #A8C8E8;
+  --carte-region-trait: #1D4F91;
+  --carte-autre: #E8EAEC;
+  --carte-trait: #DCE1DF;
+  --carte-trait-locali: #FFFFFF;
+  --carte-contour-top10: #111111;
+  --carte-contour-region: #7B8794;
+
+  /* ---- séries de graphiques (palette Okabe-Ito corrigée) ---- */
+  --serie-acled: #D55E00;
+  --serie-pdi: #0072B2;
+  --contrib-plus: #CB181D;
+  --contrib-moins: #0072B2;
+  --cat-1: #0072B2;
+  --cat-2: #D55E00;
+  --cat-3: #009E73;
+  --cat-4: #CC79A7;
+  --cat-5: #56B4E9;
+  --cat-6: #E69F00;
+  --cat-7: #882255;
+  --cat-8: #2B2B2B;
+  --serie-nationale: #8A948F;
+  --grille: #EEF0F2;
+  --axe-zero: #9AA5A1;
+
+  /* ---- hachure des valeurs estimées : jamais la couleur seule ---- */
+  --hachure: rgba(20, 20, 20, 0.6);
+
+  /* ---- typographie : pile système (la CSP interdit une police distante) ---- */
+  --police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --police-nb: "SF Mono", "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+  --fs-meta: 12px;
+  --fs-body: 14px;
+  --fs-lead: 16px;
+  --fs-bloc: 18px;
+  --fs-page: 22px;
+  --fs-chiffre: 28px;
+
+  /* ---- formes ---- */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-full: 999px;
+
+  /* ---- la seule ombre du produit : la surcouche d'infobulle et le menu mobile ---- */
+  --ombre-bulle: 0 6px 18px rgba(16, 42, 67, 0.14);
+
+  /* ---- Bootstrap 5.3 (vendu dans assets/) hérite du système au lieu de le combattre ---- */
+  --bs-body-font-family: var(--police);
+  --bs-body-font-size: var(--fs-body);
+  --bs-body-color: var(--ink-2);
+  --bs-body-bg: var(--surface-page);
+  --bs-emphasis-color: var(--ink);
+  --bs-heading-color: var(--ink);
+  --bs-secondary-color: var(--ink-3);
+  --bs-border-color: var(--line-strong);
+  --bs-border-radius: var(--r-md);
+  --bs-border-radius-sm: var(--r-sm);
+  --bs-border-radius-lg: var(--r-lg);
+  --bs-link-color: var(--accent);
+  --bs-link-hover-color: var(--accent-hover);
+  --bs-primary: var(--accent);
+  --bs-code-color: var(--ink);
+  --bs-font-sans-serif: var(--police);
+  --bs-font-monospace: var(--police-nb);
+}
+
+/* Les trois seules règles de type réactives du produit. */
+@media (min-width: 1600px) {
+  :root {
+    --fs-body: 15px;
+    --fs-chiffre: 32px;
+  }
+}
+
+@media (max-width: 575px) {
+  :root {
+    --fs-chiffre: 22px;
+  }
+}

@@ -1,0 +1,965 @@
+/* ============================================================================
+   FEUILLE DE STYLE COMMUNE — composants et mise en page partagés
+   Toutes les valeurs viennent de assets/tokens.css : aucune couleur, aucun
+   rayon ni aucune police en clair ici. Espacements sur la grille de 4 px.
+   Le produit n'a qu'une seule ombre (l'infobulle et le menu mobile) ; une
+   carte ne flotte pas, un filet de 1 px la sépare de la page.
+   ============================================================================ */
+
+/* ============================================================
+   1. BASE
+   ============================================================ */
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--police);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--ink-2);
+  background: var(--surface-page);
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, h4 { font-weight: 600; color: var(--ink); line-height: 1.25; margin: 0; }
+p { margin: 0; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: var(--r-sm); }
+
+/* Bootstrap et Dash posent chacun leur propre marque de focus (halo bleu, anneau violet d'un
+   pixel) : un seul anneau existe dans ce produit, 3 px teal avec 2 px de décalage. */
+.entete-site .nav-link:focus-visible, .entete-site .navbar-brand:focus-visible,
+.entete-site .navbar-toggler:focus-visible, .entete-site .dropdown-item:focus-visible,
+.dash-dropdown:focus-visible, .dash-dropdown:focus, .form-check-input:focus-visible,
+.btn-dc:focus-visible, .btn-dc-2:focus-visible, .btn-primary:focus-visible,
+.btn-outline-primary:focus-visible, .lien-discret:focus-visible, .champ-dc:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow:none;
+}
+
+.dash-dropdown:focus:not(:focus-visible) { outline-color: var(--focus); }
+
+/* Les chiffres sont toujours en chasse fixe : une colonne de nombres s'aligne. */
+.kpi-val, .val-score, .col-num, .col-rang, .table-dc td, .table-top10 td, .dash-cell {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lien d'évitement : hors de l'écran tant qu'il n'a pas le focus, premier arrêt du clavier. */
+.lien-evitement {
+  position: absolute;
+  z-index: 4000;
+  left: 8px;
+  top: -64px;
+  padding: 8px 16px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--on-accent);
+  background: var(--accent);
+  border-radius: var(--r-md);
+  transition: transform 120ms ease-out;
+}
+
+.lien-evitement:focus { transform: translateY(72px); color: var(--on-accent); text-decoration: none; }
+
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   2. ICÔNES — contours Lucide locaux peints par un masque CSS,
+   donc ils héritent de la couleur du texte (ce qu'une <img> ne fait pas).
+   Deux tailles seulement : 16 et 20.
+   ============================================================ */
+.ico, .aide::after {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.ico-20 { width: 20px; height: 20px; }
+
+.ico-info { mask-image: url(/assets/icones/info.svg); -webkit-mask-image: url(/assets/icones/info.svg); }
+.ico-alerte { mask-image: url(/assets/icones/triangle-alert.svg); -webkit-mask-image: url(/assets/icones/triangle-alert.svg); }
+.ico-verrou { mask-image: url(/assets/icones/lock.svg); -webkit-mask-image: url(/assets/icones/lock.svg); }
+.ico-horloge { mask-image: url(/assets/icones/clock.svg); -webkit-mask-image: url(/assets/icones/clock.svg); }
+.ico-telecharger { mask-image: url(/assets/icones/download.svg); -webkit-mask-image: url(/assets/icones/download.svg); }
+.ico-chevron { mask-image: url(/assets/icones/chevron-down.svg); -webkit-mask-image: url(/assets/icones/chevron-down.svg); }
+.ico-tri { mask-image: url(/assets/icones/chevron-up-down.svg); -webkit-mask-image: url(/assets/icones/chevron-up-down.svg); }
+.ico-menu { mask-image: url(/assets/icones/menu.svg); -webkit-mask-image: url(/assets/icones/menu.svg); }
+.ico-fermer { mask-image: url(/assets/icones/x.svg); -webkit-mask-image: url(/assets/icones/x.svg); }
+.ico-deconnexion { mask-image: url(/assets/icones/log-out.svg); -webkit-mask-image: url(/assets/icones/log-out.svg); }
+
+/* ============================================================
+   3. BANDEAU D'ÉTAT — au-dessus de l'entête, sur toutes les pages
+   ============================================================ */
+/* Hauteur serrée : le bandeau est une mention permanente, pas un bloc de contenu. Il garde
+   ses 12 px de corps et son icône ; ce sont les 4 px de respiration verticale qui partent,
+   rendus à la hauteur utile des deux écrans de décision. */
+.bandeau {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-height: 24px;
+  padding: 4px 16px;
+  font-size: var(--fs-meta);
+  line-height: 1.35;
+  text-align: center;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.bandeau .ico { margin-top: 1px; }
+.bandeau-demo { background: var(--danger-weak); border-bottom-color: var(--danger-line); color: var(--danger-ink); }
+.bandeau-demo b { font-weight: 700; }
+.bandeau-conf { background: var(--surface-1); color: var(--ink-3); }
+
+/* ============================================================
+   4. ENTÊTE DE SITE — masthead clair, onglets en toutes lettres
+   ============================================================ */
+/* Masthead compact sur toutes les vues : 44 px au lieu
+   de 56. Le lockup et les onglets gardent leur corps de texte — c'est la barre qui maigrit,
+   pas l'écriture. Sous 992 px elle reste à 48 px : la bascule tactile fait 44 × 44 et doit
+   garder son filet visible. */
+.entete-site.navbar {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  height: 44px;
+  padding: 0 16px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.entete-site .container-fluid {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 1840px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.entete-site .navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-bloc);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.entete-site .navbar-brand:hover { color: var(--ink); text-decoration: none; }
+.marque-court { display: none; }
+.marque-groupe { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.marque-equipe:hover { color: var(--lien); }
+.marque-equipe {
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--ink-3);
+  padding-left: 12px;
+  border-left: 1px solid var(--line-strong);
+}
+
+.entete-site .navbar-collapse { flex-grow: 0; }
+.entete-site .navbar-nav { flex-direction: row; align-items: stretch; height: 100%; }
+.entete-site .nav-item { display: flex; align-items: stretch; }
+
+.entete-site .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  font-size: var(--fs-body);
+  color: var(--ink-2);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.entete-site .nav-link:hover { color: var(--ink); text-decoration: none; }
+.entete-site .nav-link.active { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
+.entete-site .nav-separateur { align-self: center; width: 1px; height: 20px; background: var(--line); margin: 0 8px; }
+.entete-site .deconnexion .nav-link { color: var(--ink-3); }
+/* Les deux pages secondaires existent en deux exemplaires : menu déroulant sur grand écran, liens
+   posés à plat dans la feuille mobile (composants.barre_navigation). Un seul des deux est visible,
+   et c'est le lien à plat — toujours présent dans le document — qui porte l'état « page courante ». */
+.entete-site .nav-a-plat { display: none; }
+.entete-site:has(.nav-a-plat .nav-link.active) .nav-secondaire .dropdown-toggle {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+
+.entete-site .dropdown-toggle::after {
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  border: none;
+  vertical-align: -3px;
+  background-color: currentColor;
+  mask-image: url(/assets/icones/chevron-down.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/assets/icones/chevron-down.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.entete-site .dropdown-menu { background: var(--surface-1); border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 4px; font-size: var(--fs-body); box-shadow: var(--ombre-bulle); }
+.entete-site .dropdown-item { padding: 8px 12px; border-radius: var(--r-sm); color: var(--ink-2); }
+.entete-site .dropdown-item:hover, .entete-site .dropdown-item:focus { background: var(--surface-hover); color: var(--ink); }
+
+.entete-site .navbar-toggler {
+  display: none;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-md);
+  color: var(--ink-2);
+}
+
+.entete-site .navbar-toggler-icon {
+  width: 20px;
+  height: 20px;
+  background-image: none;
+  background-color: currentColor;
+  mask-image: url(/assets/icones/menu.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/assets/icones/menu.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.entete-site .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+  mask-image: url(/assets/icones/x.svg);
+  -webkit-mask-image: url(/assets/icones/x.svg);
+}
+
+/* La feuille mobile ne pousse pas le contenu : elle se pose sous l'entête. */
+.entete-site .collapsing { transition: none; }
+
+/* ============================================================
+   5. CADRE DE PAGE
+   ============================================================ */
+.racine { display: flex; flex-direction: column; min-height: 100dvh; }
+
+/* Marges serrées : les deux écrans de décision doivent
+   tenir dans 1366 × 768 sans que rien ne défile, et les gouttières de 24 px prenaient de la
+   largeur aux cellules de chiffres clés comme aux noms de province. */
+.page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 16px 20px 24px;
+}
+
+.racine-pleine .page { max-width: 1840px; gap: 8px; padding: 8px 16px 12px; }
+
+/* Propriété « un seul écran » : à partir de 1280×600, la page ne défile pas ;
+   ce sont les panneaux qui défilent à l'intérieur d'eux-mêmes.
+   Le plancher de hauteur est passé de 720 à 600 px : 1440×900
+   et 1366×768 sont des tailles d'écran, pas de fenêtre — barre d'onglets, barre d'adresse et
+   barre de tâches prises, il reste environ 780 et 650 px de vue. Au-dessus de l'ancien plancher,
+   la page se mettait donc à défiler sur les deux portables de décision. Sous 600 px de vue
+   (fenêtre réduite), le défilement de page reprend : écraser davantage les panneaux rendrait la
+   carte illisible. */
+@media (min-width: 1280px) and (min-height: 600px) {
+  .racine-pleine { height: 100dvh; }
+  .vue-ensemble { flex: 1 1 auto; min-height: 0; }
+  .racine-pleine .table-top10 { height: 100%; }
+}
+
+.vue-ensemble { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+
+/* ============================================================
+   6. ENTÊTE DE PAGE ET FILTRES
+   ============================================================ */
+/* Forme compacte : le titre et les filtres partagent la
+   première ligne, le périmètre tient sur une seule ligne courte dessous. La hauteur de
+   l'entête est alors celle du groupe de filtres (libellé + contrôle), pas la somme des deux.
+   À partir de 992 px la rangée ne se coupe plus : un filtre qui tomberait sur une deuxième
+   ligne rendrait à l'entête les 56 px qu'on vient de lui prendre. */
+.entete-vue { display: flex; flex: 0 0 auto; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.entete-titre { min-width: 0; }
+.titre-page { font-size: var(--fs-page); }
+.sous-titre { font-size: var(--fs-lead); color: var(--ink-2); margin-top: 4px; max-width: 92ch; }
+.entete-filtres { display: flex; flex: 0 0 auto; gap: 8px; }
+
+@media (min-width: 992px) {
+  .entete-vue { flex-wrap: nowrap; }
+}
+.filtre { display: flex; flex-direction: column; min-width: 152px; }
+.filtre-lib { display: block; font-size: var(--fs-meta); font-weight: 600; color: var(--ink-2); margin-bottom: 4px; }
+/* Rangée de filtres compacts : des colonnes inégales, à la mesure de ce qu'elles contiennent.
+   Quatre colonnes égales coupaient la valeur du critère de classement (« Score de ri… ») alors que
+   l'année et le découpage gardaient de la place en trop. Une valeur choisie se lit toujours en entier. */
+.filtres-compacts { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.75fr) minmax(0, 1.6fr) minmax(0, 0.85fr); gap: 8px; }
+.filtres-compacts .filtre, .filtres-fiche .filtre { min-width: 0; }
+.filtres-fiche { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.ligne-outils { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* --- liste déroulante Dash 4 : le bouton est le contrôle, l'input invisible est la cible du Tab --- */
+.dash-dropdown-wrapper { position: relative; overflow: hidden; border-radius: var(--r-md); }
+/* l'anneau de focus du produit est posé par le conteneur : l'entrée invisible ne doit pas dessiner
+   celui du cadriciel (violet) par-dessus */
+.dash-dropdown-focus-target { position: absolute; inset: 0; width: 100% !important; max-width: 100%; height: 100%; opacity: 0; border: none; }
+.dash-dropdown-focus-target:focus, .dash-dropdown-focus-target:focus-visible { outline: none; box-shadow: none; }
+.dash-dropdown-wrapper:has(.dash-dropdown-focus-target:focus-visible) { outline: 3px solid var(--focus); outline-offset: -3px; }
+
+.dash-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  padding: 0 32px 0 12px;
+  font-family: var(--police);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  text-align: left;
+  color: var(--ink);
+  background: var(--surface-1);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+
+.dash-dropdown:hover { border-color: var(--ink-3); }
+/* au focus, le cadriciel repeint le filet en violet : l'interaction est teal partout dans ce produit */
+.dash-dropdown:focus, .dash-dropdown:focus-visible { border-color: var(--accent); }
+.dash-dropdown[data-state="open"] { border-color: var(--accent); }
+.dash-dropdown[disabled] { background: var(--surface-hover); color: var(--ink-3); cursor: not-allowed; }
+/* Le gabarit interne de la liste Dash (une grille « icône · valeur · compte » avec sa gouttière)
+   prenait 24 px sur la largeur de la valeur, même sans icône ni compte : « 2024-2025 » s'y abrégeait
+   dans un champ pourtant assez large. La boîte du gabarit s'efface (display: contents) et c'est le
+   contrôle lui-même qui aligne sa valeur : toute la largeur revient au texte. */
+.dash-dropdown-trigger { display: contents; }
+.dash-dropdown-value { display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dash-dropdown-trigger-icon { display: none; }
+
+.dash-dropdown::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  background-color: var(--ink-3);
+  mask-image: url(/assets/icones/chevron-down.svg);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url(/assets/icones/chevron-down.svg);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.dash-dropdown-content { background: var(--surface-1); border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 4px; box-shadow: var(--ombre-bulle); }
+.dash-dropdown-option { display: flex; align-items: center; min-height: 36px; padding: 4px 12px; border-radius: var(--r-sm); font-size: var(--fs-body); color: var(--ink-2); cursor: pointer; }
+/* Dash repeint l'option survolée avec sa propre teinte interactive (violet) par une règle de
+   spécificité (0,3,1) — `.dash-options-list-option:not(:has(input[disabled])):hover`. Nos propres
+   états doivent la dépasser, comme pour l'interrupteur segmenté : d'où le sélecteur en quatre classes.
+   Le mot choisi reste lisible, et l'interaction est teal partout dans ce produit. */
+.dash-dropdown-content .dash-dropdown-options .dash-dropdown-option:hover,
+.dash-dropdown-content .dash-dropdown-options .dash-dropdown-option:focus-within { background: var(--surface-hover); color: var(--ink); }
+.dash-dropdown-content .dash-dropdown-options .dash-dropdown-option.selected,
+.dash-dropdown-content .dash-dropdown-options .dash-dropdown-option.selected:hover,
+.dash-dropdown-content .dash-dropdown-options .dash-dropdown-option.selected:focus-within { background: var(--accent-weak); color: var(--ink); font-weight: 600; }
+.dash-dropdown-options .dash-options-list-option-wrapper { display: none; }
+.dash-dropdown-value-count { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; font-size: var(--fs-meta); color: var(--ink-3); background: var(--surface-hover); border-radius: var(--r-sm); white-space: nowrap; }
+.dash-dropdown-clear { display: inline-flex; width: 16px; height: 16px; color: var(--ink-3); cursor: pointer; background-color: currentColor; mask-image: url(/assets/icones/x.svg); mask-size: contain; mask-repeat: no-repeat; mask-position: center; -webkit-mask-image: url(/assets/icones/x.svg); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; }
+.dash-dropdown-clear svg { display: none; }
+.dash-dropdown-clear:hover { color: var(--ink); }
+
+/* Cases et interrupteurs natifs des pages non refondues : l'interaction est teal, jamais le bleu du cadriciel. */
+.dash-options-list-option-checkbox { accent-color: var(--accent); }
+.form-check-input { border-color: var(--border-control); }
+.form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+.form-check-input:focus { border-color: var(--accent); }
+.form-check-label { font-size: var(--fs-body); color: var(--ink-2); }
+
+/* ============================================================
+   7. SEGMENT — choix de la mesure cartographiée
+   ============================================================ */
+/* Dash pose `labelClassName` sur le texte et sa propre classe sur l'étiquette : c'est
+   `.dash-options-list-option` qui est le contrôle, et c'est elle qui porte l'état `selected`. */
+.segment.dash-options-list { display: inline-flex; width: auto; gap: 1px; padding: 1px; background: var(--surface-1); border: 1px solid var(--border-control); border-radius: var(--r-md); }
+.segment .dash-options-list-option { display: flex; align-items: center; height: 32px; margin: 0; padding: 0 12px; font-size: var(--fs-body); color: var(--ink-2); background: none; border: none; border-radius: var(--r-sm); cursor: pointer; white-space: nowrap; }
+/* Dash repeint l'option au survol et au focus avec sa propre teinte interactive, par une règle
+   de spécificité (0,3,1) : `.dash-options-list-option:not(:has(input[disabled])):hover`. Les états
+   partagés doivent la dépasser (0,4,0 et 0,5,0), sinon le texte de l'option choisie vire au violet du
+   cadriciel dès qu'on la clique — une couleur qui n'est pas dans les jetons. */
+.segment.dash-options-list .dash-options-list-option:hover,
+.segment.dash-options-list .dash-options-list-option:focus-within { background: var(--surface-hover); color: var(--ink); }
+.segment.dash-options-list .dash-options-list-option.selected,
+.segment.dash-options-list .dash-options-list-option.selected:hover,
+.segment.dash-options-list .dash-options-list-option.selected:focus-within { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+.segment .dash-options-list-option:has(.segment-input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* l'entrée reste focalisable : jamais display:none, seulement masquée visuellement */
+.segment .dash-options-list-option-wrapper { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.segment .segment-item { display: block; margin: 0; }
+
+/* ============================================================
+   8. BANDE DE CHIFFRES CLÉS — une seule surface, des filets de 1 px,
+   pas six cartes posées côte à côte
+   ============================================================ */
+.ligne-kpi {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.kpi { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px; background: var(--surface-1); }
+/* Sur les deux écrans de décision la cellule se serre : 8 px de haut et 12 px de côté rendent
+   quatre lignes de texte à la hauteur des panneaux, et la largeur gagnée garde le contexte
+   (« 25 / 1 000 hab. » + pastille) sur une seule ligne à 1366 px. */
+.racine-pleine .kpi { padding: 8px 12px; }
+/* une alerte ou un vide remplace la bande entière : plus de grille, plus de cadre. */
+.ligne-kpi:has(> .alerte-dc), .ligne-kpi:has(> .vide) { display: block; background: none; border: none; overflow: visible; }
+/* La cellule entière est la surface de survol ; la commande déclarée est le libellé souligné
+   (composants.kpi), d'où l'état lu sur l'enfant et non sur la cellule. */
+.kpi-info { cursor: help; }
+.kpi-info:hover, .kpi-info:has([aria-expanded="true"]) { background: var(--surface-hover); }
+.kpi-info:hover .terme-aide, .kpi-info .terme-aide[aria-expanded="true"] { text-decoration-color: var(--ink-3); }
+.kpi-lib { font-size: var(--fs-meta); font-weight: 600; color: var(--ink-2); line-height: 1.3; }
+.kpi-val { font-size: var(--fs-chiffre); font-weight: 700; color: var(--ink); line-height: 1.15; overflow-wrap: anywhere; }
+/* une valeur qui est un mot, pas un chiffre (un badge, « correcte / faible ») prend la variante
+   basse de l'échelle : le corps de 28 px est réservé aux chiffres. */
+.kpi-val[data-long="true"], .kpi-val.petit { font-size: var(--fs-bloc); line-height: 1.25; }
+/* la bande rogne ce qui dépasse de ses coins arrondis : l'anneau de focus se dessine donc à
+   l'intérieur de la cellule, sinon il serait coupé sur les bords de la bande. */
+.kpi:focus-visible { outline-offset: -3px; }
+.kpi-critique { color: var(--danger); }
+.kpi-tendance { font-size: var(--fs-meta); font-weight: 600; line-height: 1.35; }
+.t-pire { color: var(--trend-pire); }
+.t-mieux { color: var(--trend-mieux); }
+.t-neutre { color: var(--trend-neutre); }
+.fleche { font-size: 0.82em; position: relative; top: -1px; }
+.kpi-var { font-size: var(--fs-meta); color: var(--ink-3); line-height: 1.35; }
+
+.chip-stale {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 4px;
+  vertical-align: -4px;
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  cursor: help;
+}
+
+.chip-stale:hover, .chip-stale[aria-expanded="true"] { color: var(--ink-2); border-color: var(--border-control); }
+
+/* ============================================================
+   9. BLOCS ET PANNEAUX
+   ============================================================ */
+/* 6fr/5fr : le contour du pays est large d'environ 1,4 fois sa hauteur, donc le panneau de
+   droite n'a plus besoin de la part la plus large — elle revient à la liste, dont les noms de
+   province tiennent alors sur une ligne. */
+.ligne-principale { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 8px; flex: 1 1 auto; min-height: 0; }
+.ligne-classement { grid-template-columns: minmax(0, 11fr) minmax(0, 9fr); }
+
+.carte-bloc {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+}
+
+.racine-pleine .carte-bloc { margin-bottom: 0; padding: 8px 12px; }
+.carte-bloc > h2 { font-size: var(--fs-bloc); margin-bottom: 8px; }
+.bloc-entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+/* Sur les deux écrans de décision, les 4 px rendus par l'entête de bloc et par la phrase de
+   lecture sont exactement ce qui permet aux dix lignes du top 10 de tenir sans ascenseur
+   intérieur à 1366 × 768 (mesuré). */
+.racine-pleine .bloc-entete { margin-bottom: 4px; }
+.bloc-entete h2 { font-size: var(--fs-bloc); }
+.note { font-size: var(--fs-meta); color: var(--ink-3); margin-top: 8px; }
+.lecture { font-size: var(--fs-meta); color: var(--ink-2); margin-top: 8px; }
+.lecture-lib { font-weight: 600; color: var(--ink); }
+/* Le filet dit « le panneau continue au-dessus » : il appartient à la phrase de lecture du
+   panneau à défilement interne. Sous la carte, la légende sépare déjà la note du tracé, et ces
+   9 px reviennent à la hauteur du pays. */
+.ligne-principale .lecture { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 4px; }
+.cle-mobile { display: none; }
+.lien-discret { display: inline-flex; align-items: center; font-size: var(--fs-body); color: var(--accent); }
+/* Lien appuyé : un lien qui quitte l'écran — « Classement
+   complet et export » — doit se voir comme un lien. Bleu et souligné au repos, pas seulement au
+   survol : c'est le seul endroit du produit où cette teinte sert, et les autres usages de
+   l'accent ne changent pas. */
+.lien-bleu { color: var(--lien); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.lien-bleu:hover, .lien-bleu:focus-visible { color: var(--lien-hover); text-decoration-thickness: 2px; }
+
+/* Ligne d'explication de la mesure cartographiée : une phrase, au même corps qu'une note.
+   Sa hauteur est réservée pour deux lignes — 36 px, la hauteur mesurée de la plus longue des
+   trois phrases quand la colonne de légende la rétrécit à 1366 px — afin que le bloc ne saute
+   pas d'un onglet à l'autre : les deux phrases courtes réservent la même place que la longue. */
+.explication-mesure { font-size: var(--fs-meta); color: var(--ink-3); min-height: 36px; margin-bottom: 4px; }
+
+/* Marqueur d'aide « i » : 3 à 5 sur tout le site, sur les notions clés seulement. */
+/* Le glyphe est peint par ::after, jamais par la boîte : un `mask-image` posé sur l'élément
+   découpe aussi tout ce qu'il contient, y compris une zone sensible agrandie, qui redevenait
+   alors inatteignable au doigt. La boîte, elle, reste libre de grandir. */
+.aide {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  vertical-align: -3px;
+  line-height: 0;
+  /* `overflow: hidden` ancre la ligne de base de la boîte sur son bord bas, comme le faisait
+     l'ancienne icône masquée : sans lui, le glyphe en ::after descend sous la ligne et un titre
+     de bloc gagne 7 px — l'écran bougerait là où rien n'a changé. */
+  overflow: hidden;
+  color: var(--ink-3);
+  cursor: help;
+}
+
+.aide::after { content: ""; vertical-align: top; mask-image: url(/assets/icones/info.svg); -webkit-mask-image: url(/assets/icones/info.svg); }
+.aide:hover, .aide:focus-visible, .aide[aria-expanded="true"] { color: var(--accent); }
+.avec-aide { display: inline; }
+/* Cible tactile : au doigt, c'est la boîte focalisable elle-même qui fait 44 × 44 ; le glyphe
+   garde ses 16 px et sa place dans la ligne (les marges négatives rendent les 28 px gagnés au
+   texte voisin, donc rien ne bouge autour). Sur un écran pointé à la souris, rien ne change. */
+@media (pointer: coarse), (max-width: 991px) {
+  .aide {
+    position: relative;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    margin: -12px;
+    margin-left: -8px;
+    vertical-align: -16px;
+  }
+
+  /* le glyphe se centre tout seul dans la cible agrandie : aucune valeur hors de l'échelle */
+  .aide::after { position: absolute; inset: 0; margin: auto; }
+}
+
+/* Terme survolable : pointillé = « il y a une définition ici ». */
+.terme-aide { cursor: help; text-decoration: underline dotted var(--line-strong); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.terme-aide:hover, .terme-aide:focus-visible, .terme-aide[aria-expanded="true"] { text-decoration-color: var(--ink-3); }
+
+/* ============================================================
+   10. TABLEAU TOP 10
+   ============================================================ */
+.zone-top10 { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.table-top10 { width: 100%; border-collapse: collapse; font-size: var(--fs-body); }
+.table-top10 th { padding: 8px; font-size: var(--fs-meta); font-weight: 600; color: var(--ink-3); text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line-strong); }
+.table-top10 td { padding: 4px 8px; height: 36px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.table-top10 tbody tr:last-child td { border-bottom: none; }
+.table-top10 tbody tr:hover { background: var(--surface-hover); }
+.col-rang { width: 28px; text-align: right; color: var(--ink-3); font-weight: 600; }
+.col-prov { min-width: 0; }
+.col-prov a { font-weight: 600; color: var(--accent); }
+.col-reg { color: var(--ink-3); font-size: var(--fs-meta); white-space: nowrap; }
+.col-num { text-align: right; white-space: nowrap; color: var(--ink); }
+.col-score { width: 22%; }
+.col-statut { white-space: nowrap; }
+.cellule-score { display: flex; align-items: center; gap: 8px; }
+.piste-score { display: block; flex: 0 0 56%; height: 6px; background: var(--surface-hover); border-radius: var(--r-sm); overflow: hidden; }
+.barre-score { display: block; height: 100%; min-width: 2px; border-radius: var(--r-sm); }
+.val-score { font-size: var(--fs-meta); font-weight: 600; color: var(--ink); }
+
+/* ============================================================
+   11. BADGE DE SOLIDITÉ — la couleur n'est jamais le seul canal
+   ============================================================ */
+.badge-statut { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; font-size: var(--fs-meta); font-weight: 600; border-radius: var(--r-full); white-space: nowrap; }
+.badge-statut .points { font-size: 9px; letter-spacing: 1px; }
+.statut-stable_top10 { background: var(--surface-hover); color: var(--ink); }
+.statut-plutot_top10 { background: var(--surface-hover); color: var(--ink-2); }
+.statut-instable_bord { background: var(--surface-1); color: var(--ink-3); border: 1px dashed var(--border-control); }
+.statut-hors_top10 { background: var(--surface-page); color: var(--ink-3); }
+
+/* ============================================================
+   12. BLOC DE CARTE ET LÉGENDE DISCRÈTE
+   Ce qui est dessiné est le pays : un contour irrégulier d'environ 1,4:1, jamais une
+   grille de carrés. La boîte du tracé est donc dimensionnée pour lui, et le tracé reste
+   centré et jamais étiré (scaleanchor + constrain dans figures.py). Règle commune :
+   toutes les pages à carte en héritent, sans CSS de page.
+   ============================================================ */
+
+/* Régime empilé — défaut, et carte de localisation de la fiche à toutes les largeurs :
+   la boîte prend la largeur du bloc et en déduit sa hauteur, donc aucune bande vide
+   au-dessus ni au-dessous du pays. La largeur donne toujours la hauteur : pas de plancher. */
+.zone-carte, .fiche-carte { flex: 0 0 auto; aspect-ratio: 1.4 / 1; min-height: 0; max-height: 500px; }
+.fiche-carte { max-height: 340px; }
+
+/* Régime deux panneaux (écrans de décision, à partir de 1280 px) : la carte prend la hauteur
+   qui reste dans le panneau — plancher 180px, plafond 560px. Le tracé est alors borné par la
+   hauteur et n'utilise que « hauteur × 1,4 » de la largeur ; le reste est voulu et tient sous
+   25 % du panneau, c'est pour cela que la ligne est en 6fr/5fr. */
+@media (min-width: 1280px) {
+  .racine-pleine .zone-carte { flex: 1 1 auto; aspect-ratio: auto; min-height: 180px; max-height: 560px; }
+}
+
+/* Écran court (le portable de réunion, 1366×768) : le panneau reste bien plus large que haut,
+   donc la légende et la note passent dans une colonne de 200px à droite de la carte — dans la
+   place que le contour 1,4:1 y laissait vide — et la carte prend toute la hauteur du bloc au
+   lieu de se poser sur son plancher. Rien ne sort du bloc, rien ne recouvre le tracé.
+   La légende et la note vivent dans un seul conteneur, qui devient cette colonne.
+
+   La colonne latérale ne sert que là où une bande de chiffres clés écrase le panneau de
+   carte : c'est la vue d'ensemble. Le classement n'en a pas, son panneau est déjà plus haut
+   que « largeur ÷ 1,4 », et lui prendre 200px de large y creuserait la bande vide que cette
+   règle est censée supprimer — il garde donc sa légende sous la carte. */
+@media (min-width: 1280px) and (max-height: 860px) {
+  .ligne-principale:not(.ligne-classement) .bloc-carte {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 200px;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: 16px;
+  }
+  .ligne-principale:not(.ligne-classement) .bloc-carte > * { grid-column: 2; grid-row: 3; min-width: 0; align-self: start; }
+  .ligne-principale:not(.ligne-classement) .bloc-carte > .bloc-entete { grid-column: 1 / -1; grid-row: 1; }
+  /* la phrase qui décrit la mesure choisie appartient aux onglets, pas à la légende :
+     elle garde donc toute la largeur du bloc, juste sous l'entête */
+  .ligne-principale:not(.ligne-classement) .bloc-carte > .explication-mesure { grid-column: 1 / -1; grid-row: 2; }
+  .ligne-principale:not(.ligne-classement) .bloc-carte > .zone-carte { grid-column: 1; grid-row: 3; max-width: 100%; aspect-ratio: auto; align-self: stretch; }
+  .ligne-principale:not(.ligne-classement) .bloc-carte .legende-carte { margin-top: 0; }
+  .ligne-principale:not(.ligne-classement) .bloc-carte .legende-cles { flex-direction: column; gap: 4px; margin-top: 8px; }
+}
+
+.legende-carte { margin-top: 8px; }
+.legende-titre { font-size: var(--fs-meta); color: var(--ink-2); margin-bottom: 4px; }
+.legende-echelle { display: flex; align-items: center; gap: 0; }
+.legende-echelle span { width: 100%; height: 12px; }
+.ech-risque-1 { background: var(--risque-1); }
+.ech-risque-2 { background: var(--risque-2); }
+.ech-risque-3 { background: var(--risque-3); }
+.ech-risque-4 { background: var(--risque-4); }
+.ech-risque-5 { background: var(--risque-5); }
+.ech-risque-6 { background: var(--risque-6); }
+.ech-risque-7 { background: var(--risque-7); }
+.ech-risque-8 { background: var(--risque-8); }
+.ech-risque-9 { background: var(--risque-9); }
+.ech-neutre-1 { background: var(--neutre-1); }
+.ech-neutre-2 { background: var(--neutre-2); }
+.ech-neutre-3 { background: var(--neutre-3); }
+.ech-neutre-4 { background: var(--neutre-4); }
+.ech-neutre-5 { background: var(--neutre-5); }
+.ech-neutre-6 { background: var(--neutre-6); }
+.ech-neutre-7 { background: var(--neutre-7); }
+.ech-neutre-8 { background: var(--neutre-8); }
+.ech-neutre-9 { background: var(--neutre-9); }
+.legende-echelle span:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+.legende-echelle span:last-child { border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.legende-ticks { display: flex; justify-content: space-between; font-size: var(--fs-meta); color: var(--ink-3); margin-top: 4px; }
+.legende-cles { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: var(--fs-meta); color: var(--ink-3); margin-top: 4px; }
+.legende-cles i { display: inline-block; width: 12px; height: 12px; margin-right: 4px; border: 1px solid var(--line-strong); border-radius: var(--r-sm); vertical-align: -2px; }
+.legende-nd { background: var(--risque-nd); }
+.legende-estime { background: var(--risque-3); background-image: repeating-linear-gradient(45deg, var(--hachure) 0, var(--hachure) 1px, transparent 1px, transparent 4px); }
+/* La clé « top 10 » et le contour noir qu'elle décrivait ont été retirés de la carte
+   (code visuel non compris et peu lisible). Les dix
+   provinces les plus à risque se lisent dans le classement, à gauche. */
+
+/* ============================================================
+   13. ÉTATS : chargement, vide, erreur
+   ============================================================ */
+.squelette { display: block; background: var(--surface-hover); border-radius: var(--r-sm); }
+.squelette-val { width: 72%; height: 28px; }
+.squelette-ligne { width: 100%; height: 36px; margin-bottom: 1px; }
+.vide { display: flex; flex: 1 1 auto; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 120px; padding: 24px; text-align: center; color: var(--ink-2); }
+
+.alerte-dc { display: flex; gap: 8px; padding: 12px 16px; background: var(--danger-weak); border: 1px solid var(--danger-line); border-radius: var(--r-md); }
+.alerte-dc .titre { font-weight: 600; color: var(--danger-ink); }
+.alerte-dc .ico { color: var(--danger-ink); }
+.alerte-neutre { background: var(--surface-hover); border-color: var(--line-strong); }
+.alerte-neutre .titre, .alerte-neutre .ico { color: var(--ink); }
+
+/* Les alertes Bootstrap encore utilisées par les pages non refondues. */
+.alert { padding: 12px 16px; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--surface-hover); color: var(--ink-2); }
+.alert-danger { background: var(--danger-weak); border-color: var(--danger-line); color: var(--danger-ink); }
+.alert-warning { background: var(--surface-hover); border-color: var(--line-strong); color: var(--ink-2); }
+
+/* ============================================================
+   14. BOUTONS ET LIENS
+   ============================================================ */
+.btn-dc, .btn-dc-2, .btn-outline-primary, .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  font-family: var(--police);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: 1;
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+
+.btn-dc, .btn-primary { color: var(--on-accent); background: var(--accent); border: 1px solid var(--accent); }
+.btn-dc:hover, .btn-primary:hover { color: var(--on-accent); background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-dc:active, .btn-primary:active { background: var(--accent-active); border-color: var(--accent-active); transform: scale(0.985); }
+.btn-dc-2, .btn-outline-primary { color: var(--ink-2); background: var(--surface-1); border: 1px solid var(--border-control); }
+.btn-dc-2:hover, .btn-outline-primary:hover { color: var(--ink); background: var(--surface-hover); border-color: var(--ink-3); }
+.btn-dc-2:active, .btn-outline-primary:active { transform: scale(0.985); }
+.btn-dc, .btn-dc-2, .btn-outline-primary, .btn-primary { transition: background-color 120ms ease-out, transform 120ms ease-out; }
+.btn-bloc { width: 100%; height: 48px; }
+
+/* ============================================================
+   15. INFOBULLE — la seule surcouche du produit
+   ============================================================ */
+#bulle-aide {
+  position: fixed;
+  z-index: 3000;
+  display: none;
+  max-width: min(330px, 100vw - 16px);
+  padding: 8px 12px;
+  font: 400 var(--fs-meta) / 1.42 var(--police);
+  color: var(--ink);
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  box-shadow: var(--ombre-bulle); /* design-lint-allow: infobulle = la seule surcouche du produit */
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+#bulle-aide.visible { display: block; }
+#bulle-aide .b-def { color: var(--ink); }
+#bulle-aide .b-meta { color: var(--ink-3); margin-top: 4px; }
+#bulle-aide .b-lib { font-weight: 600; color: var(--ink-2); }
+
+/* ============================================================
+   16. TABLEAUX GÉNÉRIQUES ET TABLEAU DE CLASSEMENT COMPLET
+   ============================================================ */
+.table-dc { width: 100%; font-size: var(--fs-body); border-collapse: collapse; margin-bottom: 0; }
+.table-dc th { padding: 8px; font-size: var(--fs-meta); font-weight: 600; color: var(--ink-3); text-align: left; background: var(--surface-1); border-bottom: 1px solid var(--line-strong); }
+.table-dc td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; color: var(--ink-2); }
+.table-dc tbody tr:hover { background: var(--surface-hover); }
+.table-dc tbody tr:last-child td { border-bottom: none; }
+/* Valeur estimée : la hachure est le code « estimé » du produit — le même que sur les cartes — mais
+   elle ne passe jamais sous le texte. Elle tient dans une bande de 4 px au bord d'attaque de la
+   cellule, dans la gouttière : la valeur, elle, reste sur fond uni, et l'astérisque porte la source.
+   (Sous le texte, à 1 px tous les 8 px, un nombre comme « 247,3 ‰ » restait pénible à lire.) */
+.impute { position: relative; }
+
+.impute::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background-image: repeating-linear-gradient(45deg, var(--hachure) 0, var(--hachure) 1px, transparent 1px, transparent 4px);
+  background-color: var(--surface-hover);
+}
+
+.ast { color: var(--warn-ink); font-weight: 700; cursor: help; }
+
+.zone-liste { flex: 1 1 auto; height: 420px; min-height: 0; border-top: 1px solid var(--line-strong); }
+.zone-liste .dash-table-container, .zone-liste .dash-spreadsheet-container { height: 100%; }
+.zone-liste .dash-cell .dash-cell-value p { margin: 0; }
+/* Le DataTable redéfinit --accent (rose vif) sur sa propre table : on lui rend la valeur du
+   système, pour les liens comme pour ses propres bordures de cellule sélectionnée. */
+.racine .dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner table { --accent: var(--accent-racine); }
+.zone-liste .dash-cell .dash-cell-value a, .zone-liste .dash-cell a { font-weight: 600; color: var(--accent); text-decoration: none; }
+.zone-liste .dash-cell .dash-cell-value a:hover, .zone-liste .dash-cell a:hover { color: var(--accent-hover); text-decoration: underline; }
+.zone-liste .dash-spreadsheet-inner td:hover { background: var(--surface-hover); }
+.dash-spreadsheet-container .dash-spreadsheet-inner th { background: var(--surface-1) !important; color: var(--ink-3) !important; font-weight: 600; }
+.dash-table-tooltip { font-size: var(--fs-meta); }
+
+/* ============================================================
+   17. LIMITE CONNUE — pas de bloc crème, pas de barre latérale
+   ============================================================ */
+.limite { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line); }
+.limite:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
+
+/* ============================================================
+   18. MÉTHODE (document)
+   ============================================================ */
+.markdown-methode { font-size: var(--fs-lead); color: var(--ink-2); max-width: 72ch; }
+.markdown-methode h2 { font-size: var(--fs-bloc); margin-top: 24px; margin-bottom: 8px; }
+.markdown-methode h3 { font-size: var(--fs-lead); margin-top: 16px; margin-bottom: 4px; }
+.markdown-methode p, .markdown-methode ul, .markdown-methode ol { margin-bottom: 12px; }
+.markdown-methode code { font-family: var(--police-nb); font-size: var(--fs-body); color: var(--ink); }
+/* un tableau large du document défile dans sa propre boîte : la page, elle, ne défile jamais de côté */
+.markdown-methode table { display: block; max-width: 100%; overflow-x: auto; font-size: var(--fs-body); margin-bottom: 16px; border-collapse: collapse; }
+.markdown-methode table th, .markdown-methode table td { border: 1px solid var(--line); padding: 4px 8px; }
+.markdown-methode table th { background: var(--surface-hover); color: var(--ink); font-weight: 600; }
+
+/* ============================================================
+   19. FICHE PROVINCE (ossature partagée)
+   ============================================================ */
+/* La rangée haute de la fiche vit maintenant dans assets/page-fiche.css, avec sa page :
+   l'ossature partagée `.fiche-haut` n'avait plus d'utilisateur et a été retirée,
+   de même que la clé de légende `.legende-locali`. */
+.fiche-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line-strong); border-radius: var(--r-md); overflow: hidden; }
+.fiche-identite h2 { font-size: var(--fs-bloc); color: var(--ink); }
+
+/* ============================================================
+   20. CONNEXION ET PAGE INTROUVABLE
+   ============================================================ */
+.page-connexion { display: flex; align-items: center; justify-content: center; min-height: 100dvh; padding: 24px; background: var(--surface-page); }
+.carte-connexion { width: min(420px, 100% - 32px); padding: 48px 32px; background: var(--surface-1); border: 1px solid var(--line-strong); border-radius: var(--r-lg); }
+.carte-connexion .marque-nom { display: block; font-size: var(--fs-page); font-weight: 600; color: var(--ink); line-height: 1.25; }
+.carte-connexion .marque-ligne { display: block; font-size: var(--fs-meta); color: var(--ink-3); margin-top: 4px; }
+.carte-connexion form { margin-top: 24px; }
+.carte-connexion .alerte-dc, .carte-connexion .alert { margin-top: 16px; }
+.carte-connexion .filtre-lib { margin-bottom: 4px; }
+.carte-connexion .champ-dc { margin-bottom: 16px; }
+.champ-dc { display: block; width: 100%; height: 48px; padding: 0 12px; font-family: var(--police); font-size: var(--fs-lead); color: var(--ink); background: var(--surface-1); border: 1px solid var(--border-control); border-radius: var(--r-md); }
+.champ-dc:hover { border-color: var(--ink-3); }
+.champ-dc:focus { border-color: var(--accent); outline: 3px solid var(--focus); outline-offset: 2px; }
+.champ-dc[aria-invalid="true"] { border-color: var(--danger); }
+.mention-conf { font-size: var(--fs-meta); color: var(--ink-3); margin-top: 24px; }
+
+.bloc-404 { max-width: 480px; margin: 48px auto; padding: 24px; text-align: center; background: var(--surface-1); border: 1px solid var(--line-strong); border-radius: var(--r-md); }
+.bloc-404 p { font-size: var(--fs-body); color: var(--ink-2); margin-top: 8px; margin-bottom: 16px; }
+
+/* ============================================================
+   21. DIVERS DASH
+   ============================================================ */
+._dash-loading { margin: 32px auto; color: var(--accent); }
+.js-plotly-plot .plotly .modebar { display: none; }
+
+/* ============================================================
+   22. RÉACTIF
+   ============================================================ */
+@media (min-width: 1920px) {
+  .page { padding-left: 32px; padding-right: 32px; }
+  .entete-site.navbar { padding: 0 32px; }
+}
+
+@media (max-width: 1279px) {
+  /* les panneaux s'empilent : la liste d'abord, la carte ensuite ; la boîte de carte
+     revient alors au régime empilé défini en section 12. */
+  .ligne-principale { grid-template-columns: minmax(0, 1fr); }
+  .zone-top10 { overflow-x: auto; }
+}
+
+@media (max-width: 1199px) {
+  .ligne-kpi { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 991px) {
+  .entete-site.navbar { height: 48px; padding: 0 16px; }
+  .entete-site .navbar-toggler { display: flex; }
+  .marque-equipe { display: none; }
+  #nav-menu.navbar-collapse { position: absolute; top: 100%; left: 0; right: 0; z-index: 1040; background: var(--surface-1); border-bottom: 1px solid var(--line-strong); box-shadow: var(--ombre-bulle); }
+  #nav-menu .navbar-nav { flex-direction: column; align-items: stretch; height: auto; padding: 4px; }
+  #nav-menu .nav-item { display: block; }
+  #nav-menu .nav-link { height: 48px; padding: 0 16px; border-bottom: none; margin-bottom: 0; }
+  #nav-menu .nav-link.active { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+  #nav-menu .nav-separateur { width: auto; height: 1px; margin: 4px 16px; }
+  /* Un menu dans un menu n'est pas tenable au doigt : dans la feuille, les deux pages secondaires
+     sont des liens à plat, chacune à un seul toucher. */
+  #nav-menu .nav-secondaire { display: none; }
+  #nav-menu .nav-a-plat { display: block; }
+  .page { padding: 16px 20px 24px; }
+  .racine-pleine .page { padding: 12px 20px 16px; }
+  .dash-dropdown { height: 44px; font-size: var(--fs-lead); }
+  .segment .dash-options-list-option { height: 44px; }
+  .table-top10 td { height: 48px; }
+  /* le lien d'une ligne occupe la hauteur de sa ligne : viser le nom, c'est viser la ligne */
+  .table-top10 .col-prov a { display: block; padding: 12px 0; margin: -12px 0; }
+  .chip-stale { height: 32px; padding: 0 8px; }
+  .fiche-carte { max-height: 300px; }
+  .zone-liste { height: 60dvh; }
+  .lien-discret { min-height: 44px; }
+}
+
+@media (max-width: 767px) {
+  .page, .racine-pleine .page { padding: 16px 16px 24px; }
+  .entete-site.navbar { padding: 0 16px; }
+  .marque-long { display: none; }
+  .marque-court { display: inline; }
+}
+
+@media (max-width: 575px) {
+  .bandeau { justify-content: flex-start; text-align: left; }
+  .entete-vue { flex-direction: column; align-items: stretch; }
+  .entete-filtres { flex-direction: column; }
+  .filtre { min-width: 0; }
+  .ligne-kpi, .fiche-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filtres-compacts, .filtres-fiche { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filtres-fiche .filtre-province { grid-column: 1 / -1; }
+  .ligne-outils { flex-wrap: wrap; }
+  .col-reg, .piste-score { display: none; }
+  .col-score { width: auto; }
+  .table-top10 { font-size: 13px; }
+  .table-top10 td, .table-top10 th { padding: 4px; }
+  .table-top10 th { white-space: normal; }
+  .badge-statut { padding: 0 4px; }
+  /* le mot n'est masqué que dans le tableau dense du top 10, où les points le remplacent et où
+     la phrase de lecture en donne la clé ; dans un chiffre clé le mot EST la valeur. */
+  .table-top10 .badge-statut .mot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .cle-mobile { display: inline; }
+  .segment.dash-options-list { flex-direction: column; align-items: stretch; width: 100%; }
+  .zone-carte { max-height: 300px; }
+  .table-dc th { white-space: normal; }
+}
+
+/* ============================================================
+   23. MOUVEMENT RÉDUIT — un document ne bouge pas pendant qu'on le lit
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+  .btn-dc:active, .btn-dc-2:active, .btn-primary:active, .btn-outline-primary:active { transform: none; }
+}

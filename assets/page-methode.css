@@ -1,0 +1,66 @@
+/* ============================================================================
+   PAGE « MÉTHODE ET DÉFINITIONS »
+   Règles de page uniquement, toutes portées par .methode-doc.
+   Aucune couleur, aucune police, aucun rayon en clair : tout vient de
+   assets/tokens.css. Espacements sur la grille de 4 px.
+   ============================================================================ */
+
+/* Sommaire 3/12 à gauche, document 9/12 à droite à partir de 1024 px ;
+   une seule colonne en dessous, sommaire en tête. */
+.methode-grille { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px; }
+.methode-corps { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.methode-doc .carte-bloc { margin-bottom: 0; }
+
+/* Une ancre ne doit pas coller au haut de la fenêtre : le titre de section garde son air. */
+.methode-doc .methode-corps > .carte-bloc { scroll-margin-top: 24px; }
+
+/* ------------------------------------------------------------------ sommaire */
+.methode-toc { position: sticky; top: 24px; align-self: start; max-height: calc(100dvh - 48px); overflow-y: auto; }
+.toc-titre { font-size: var(--fs-meta); font-weight: 600; color: var(--ink-2); margin-bottom: 8px; }
+.toc-liste { display: flex; flex-direction: column; list-style: none; margin: 0; padding: 0; }
+
+.toc-liste a {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: var(--fs-body);
+  color: var(--ink-2);
+  border-radius: var(--r-sm);
+}
+
+.toc-liste a:hover { color: var(--ink); background: var(--surface-hover); text-decoration: none; }
+
+/* ------------------------------------------------------------------ document
+   La prose est mesurée à 72 caractères ; un tableau de méthode, lui, prend toute
+   la largeur de sa colonne — à 72 ch, « Sources et licences » devient illisible. */
+.methode-doc .methode-lead { font-size: var(--fs-lead); color: var(--ink-2); max-width: 72ch; margin-bottom: 12px; }
+.methode-doc .markdown-methode { max-width: none; }
+
+.methode-doc .markdown-methode > p,
+.methode-doc .markdown-methode > ul,
+.methode-doc .markdown-methode > ol { max-width: 72ch; }
+
+.methode-doc .markdown-methode > :last-child { margin-bottom: 0; }
+.methode-doc .markdown-methode th { white-space: nowrap; }
+.methode-doc .markdown-methode td { vertical-align: top; }
+
+/* ------------------------------------------------------------------- réactif */
+@media (max-width: 1023px) {
+  .methode-grille { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .methode-toc { position: static; max-height: none; overflow-y: visible; }
+}
+
+@media (max-width: 991px) {
+  /* cible tactile : chaque entrée du sommaire fait au moins 44 px de haut */
+  .toc-liste a { min-height: 44px; padding: 8px 12px; }
+  .methode-doc .markdown-methode th { white-space: normal; }
+  /* Une colonne ne descend pas sous une largeur lisible : le tableau déborde et
+     défile DANS sa boîte (la feuille commune le pose déjà en overflow-x: auto),
+     au lieu d'écraser « Abandon harmonisé » sur six lignes d'un mot. */
+  .methode-doc .markdown-methode table th,
+  .methode-doc .markdown-methode table td { min-width: 128px; }
+  /* un nom technique d'un seul tenant (« analyse.v_dashboard_* ») passe à la ligne plutôt que
+     d'être rogné : sur un écran de 390 px, c'est la seule façon de le lire en entier */
+  .methode-doc .markdown-methode table code { overflow-wrap: anywhere; }
+}
